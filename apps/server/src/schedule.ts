@@ -16,11 +16,11 @@ export async function accounts(edge?: EdgeId | null): Promise<AccountRow[]> {
 
 export type Slot = { account_id: string; platform: Plat; slot: string; at: string; audience_time: string; owner_time: string };
 
-/** Slots in the next `days` days with no post within an hour of them. */
+/** Slots in the next `days` days with no post within 2 hours of them (the spacing rule scheduling enforces). */
 export async function openSlots(accts: AccountRow[], days = 2, now = new Date()): Promise<Slot[]> {
   if (!accts.length) return [];
   const taken = await q<{ account_id: string; at: Date }>(
-    "select account_id, at from posts where account_id = any($1) and status not in ('cancelled','failed') and at > now() - interval '2 hours'",
+    "select account_id, at from posts where account_id = any($1) and status not in ('cancelled','failed') and at > now() - interval '3 hours'",
     [accts.map((a) => a.id)],
   );
   const out: Slot[] = [];
@@ -33,7 +33,7 @@ export async function openSlots(accts: AccountRow[], days = 2, now = new Date())
         const at = zonedToUtc(ymd, s, a.tz);
         if (at.getTime() < now.getTime() + 10 * 60_000) continue;
         if (at.getTime() > now.getTime() + days * 86400_000) continue;
-        if (taken.some((t) => t.account_id === a.id && Math.abs(t.at.getTime() - at.getTime()) < 60 * 60_000)) continue;
+        if (taken.some((t) => t.account_id === a.id && Math.abs(t.at.getTime() - at.getTime()) < 2 * 3600_000)) continue;
         out.push({ account_id: a.id, platform: a.platform, slot: s, at: at.toISOString(), audience_time: labelIn(at, a.tz), owner_time: labelIn(at, config.ownerTz) });
       }
     }
