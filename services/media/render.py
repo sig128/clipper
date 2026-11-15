@@ -291,8 +291,17 @@ def cmd_render(args):
     trim_expr = f"trim=start={tin}" + (f":end={tout}" if tout else "") + ",setpts=PTS-STARTPTS"
     chains.append(f"[0:v]{trim_expr},split=2[vraw][vface]" if (layout == "gameplay_facecam" and fc) else f"[0:v]{trim_expr}[vraw]")
 
-    # main gameplay crop -> scale to output
-    chains.append(f"[vraw]crop={cw}:{ch}:{cx}:{cy},scale={ow}:{oh}:flags=bicubic,setsar=1[vmain]")
+    if layout == "landscape_fit":
+        # whole frame fitted to the width over a blurred, darkened fill of itself: keeps a
+        # streamer's facecam and HUD in view instead of cropping them away
+        chains.append("[vraw]split=2[vbg0][vfg0]")
+        chains.append(f"[vbg0]scale={ow}:{oh}:force_original_aspect_ratio=increase,crop={ow}:{oh},"
+                      f"boxblur=24:2,eq=brightness=-0.10:saturation=0.9[vbg]")
+        chains.append(f"[vfg0]crop={cw}:{ch}:{cx}:{cy},scale={ow}:-2:flags=bicubic,setsar=1[vfg]")
+        chains.append("[vbg][vfg]overlay=0:(H-h)/2,setsar=1[vmain]")
+    else:
+        # main gameplay crop -> scale to output
+        chains.append(f"[vraw]crop={cw}:{ch}:{cx}:{cy},scale={ow}:{oh}:flags=bicubic,setsar=1[vmain]")
 
     if layout == "gameplay_facecam" and fc:
         fcw = even(sw * fc["w"]); fch = even(sh * fc["h"])

@@ -71,11 +71,20 @@ pnpm worker                     # or run the worker on the host
 pnpm dev                        # Next.js web tier
 ```
 
+## Server and bots (Railway)
+
+`apps/server` is the always-on side: clip library, Twitch and Kick intake, live
+recording of permitted streamers, render queue, posting to all nine accounts through
+Upload-Post at four slots a day, metrics, and the MCP tool server the four Grok bots
+use. See `docs/SERVER.md` and `docs/BOTS.md`. The site's `/hub` pages (Library,
+Accounts, Bots, Streamers) read from it.
+
 ## Hosted studio (Vercel)
 
 The Vercel project builds `apps/web` (Root Directory `apps/web`) and redeploys on
 every push to `main`. The build copies `apps/studio/clipforge-studio.html` into
-`public/` and serves it at `/`; `/status` reports the web tier. The studio runs in
+`public/` and serves it at `/`; `/status` reports the web tier. The whole site, studio
+included, sits behind the owner login (`OWNER_PASSWORD`, `SESSION_SECRET`). The studio runs in
 the browser and keeps the plan on that device. Rendering and auto-posting need the
 worker (FFmpeg + Redis) on a server: until `REDIS_HOST` points at that Redis,
 `/api/renders` answers 503 `queue_not_configured`.

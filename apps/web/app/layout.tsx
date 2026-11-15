@@ -1,13 +1,17 @@
+import "./globals.css";
+
 export const metadata = {
   title: "Clipforge",
   description: "Private AI clipping studio",
+  robots: { index: false, follow: false },
 };
+
+export const viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#0b0b0d" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, background: "#0a0c11", color: "#eef1f6",
-        fontFamily: "Inter, system-ui, sans-serif" }}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

@@ -1,0 +1,16 @@
+**/node_modules
+**/.next
+**/out
+**/*.mp4
+**/*.webm
+**/*.tsbuildinfo
+.git
+apps/studio
+apps/web/public
+docs
+examples
+infra
+**/test
+**/__pycache__
+.env
+.env.*

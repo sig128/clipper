@@ -1,0 +1,27 @@
+{
+  "name": "@clipforge/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Clipforge server: clip library, Twitch/Kick intake, render queue, posting through Upload-Post, and the tool server the Grok bots use.",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "test": "tsx --test --test-concurrency=1 test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clipforge/contracts": "workspace:*",
+    "@hono/node-server": "^2.1.8",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "hono": "^4.13.18",
+    "pg": "^8.16.0",
+    "tsx": "^4.19.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/pg": "^8.15.0",
+    "typescript": "^5.6.3"
+  }
+}
