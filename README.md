@@ -71,6 +71,15 @@ pnpm worker                     # or run the worker on the host
 pnpm dev                        # Next.js web tier
 ```
 
+## Hosted studio (Vercel)
+
+The Vercel project builds `apps/web` (Root Directory `apps/web`) and redeploys on
+every push to `main`. The build copies `apps/studio/clipforge-studio.html` into
+`public/` and serves it at `/`; `/status` reports the web tier. The studio runs in
+the browser and keeps the plan on that device. Rendering and auto-posting need the
+worker (FFmpeg + Redis) on a server: until `REDIS_HOST` points at that Redis,
+`/api/renders` answers 503 `queue_not_configured`.
+
 ## Honesty rules baked in
 
 No fabricated timestamps, quotes, metrics or “97% viral” scores. Missing data is
