@@ -1,0 +1,18 @@
+node_modules/
+.next/
+dist/
+out/
+*.mp4
+*.png
+!docs/**/*.png
+.env
+.env.local
+__pycache__/
+*.pyc
+.DS_Store
+pnpm-lock.yaml.bak
+/tmp/
+
+# studio test capture (rebuild with apps/studio/test/make-capture.sh) and test output
+apps/studio/test/*.webm
+apps/studio/test/e2e4-out/

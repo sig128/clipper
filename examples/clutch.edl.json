@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "revisionId": "rev_demo_0003",
+  "title": "The 1v4 clutch — no shields, final circle",
+  "source": {
+    "path": "out/source.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": "30/1"
+  },
+  "output": { "width": 1080, "height": 1920, "fps": 30 },
+  "trim": { "in": 1.0, "out": 11.0 },
+  "crop": { "x": 0.3418, "y": 0.0, "w": 0.3164, "h": 1.0 },
+  "layout": "gameplay_facecam",
+  "facecam": { "x": 0.72, "y": 0.037, "w": 0.1875, "h": 0.2037, "dst_h": 0.19 },
+  "captions": {
+    "style": {
+      "font": "Inter",
+      "size": 64,
+      "primary": "#2fd4e3",
+      "secondary": "#ffffff",
+      "outline": 6,
+      "shadow": 1,
+      "bold": true,
+      "pos": 0.70
+    },
+    "lines": [
+      { "words": [
+        {"t": 0.30, "d": 0.34, "w": "okay"},
+        {"t": 0.68, "d": 0.30, "w": "just"},
+        {"t": 1.00, "d": 0.34, "w": "one"},
+        {"t": 1.36, "d": 0.40, "w": "more"},
+        {"t": 1.80, "d": 0.50, "w": "fight"}
+      ]},
+      { "words": [
+        {"t": 2.60, "d": 0.34, "w": "wait—"},
+        {"t": 3.00, "d": 0.34, "w": "they"},
+        {"t": 3.38, "d": 0.42, "w": "ALL"},
+        {"t": 3.84, "d": 0.56, "w": "pushed"}
+      ]},
+      { "words": [
+        {"t": 4.70, "d": 0.30, "w": "no"},
+        {"t": 5.04, "d": 0.62, "w": "shields"},
+        {"t": 5.72, "d": 0.30, "w": "i"},
+        {"t": 6.04, "d": 0.34, "w": "have"},
+        {"t": 6.42, "d": 0.64, "w": "nothing"}
+      ]},
+      { "words": [
+        {"t": 7.40, "d": 0.30, "w": "there"},
+        {"t": 7.74, "d": 0.26, "w": "is"},
+        {"t": 8.04, "d": 0.46, "w": "NO"},
+        {"t": 8.420, "d": 0.70, "w": "way"}
+      ]},
+      { "words": [
+        {"t": 9.20, "d": 0.30, "w": "ONE"},
+        {"t": 9.54, "d": 0.26, "w": "v"},
+        {"t": 9.84, "d": 0.90, "w": "FOUR"}
+      ]}
+    ]
+  },
+  "audio": { "gain_db": 0, "loudnorm": true }
+}

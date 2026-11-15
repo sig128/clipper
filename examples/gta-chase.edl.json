@@ -1,0 +1,184 @@
+{
+  "schemaVersion": "1.0",
+  "revisionId": "rev_gta_0001",
+  "title": "Five-star chase ends in the harbor",
+  "source": {
+    "path": "out/source.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": "30/1"
+  },
+  "output": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30
+  },
+  "trim": {
+    "in": 1.0,
+    "out": 11.0
+  },
+  "crop": {
+    "x": 0.3418,
+    "y": 0.0,
+    "w": 0.3164,
+    "h": 1.0
+  },
+  "layout": "full",
+  "captions": {
+    "style": {
+      "font": "Inter",
+      "size": 64,
+      "primary": "#2fd4e3",
+      "secondary": "#ffffff",
+      "outline": 6,
+      "shadow": 1,
+      "bold": true,
+      "pos": 0.7
+    },
+    "lines": [
+      {
+        "words": [
+          {
+            "t": 0.3,
+            "d": 0.34,
+            "w": "okay"
+          },
+          {
+            "t": 0.68,
+            "d": 0.3,
+            "w": "just"
+          },
+          {
+            "t": 1.0,
+            "d": 0.34,
+            "w": "one"
+          },
+          {
+            "t": 1.36,
+            "d": 0.4,
+            "w": "more"
+          },
+          {
+            "t": 1.8,
+            "d": 0.5,
+            "w": "fight"
+          }
+        ]
+      },
+      {
+        "words": [
+          {
+            "t": 2.6,
+            "d": 0.34,
+            "w": "wait—"
+          },
+          {
+            "t": 3.0,
+            "d": 0.34,
+            "w": "they"
+          },
+          {
+            "t": 3.38,
+            "d": 0.42,
+            "w": "ALL"
+          },
+          {
+            "t": 3.84,
+            "d": 0.56,
+            "w": "pushed"
+          }
+        ]
+      },
+      {
+        "words": [
+          {
+            "t": 4.7,
+            "d": 0.3,
+            "w": "no"
+          },
+          {
+            "t": 5.04,
+            "d": 0.62,
+            "w": "shields"
+          },
+          {
+            "t": 5.72,
+            "d": 0.3,
+            "w": "i"
+          },
+          {
+            "t": 6.04,
+            "d": 0.34,
+            "w": "have"
+          },
+          {
+            "t": 6.42,
+            "d": 0.64,
+            "w": "nothing"
+          }
+        ]
+      },
+      {
+        "words": [
+          {
+            "t": 7.4,
+            "d": 0.3,
+            "w": "there"
+          },
+          {
+            "t": 7.74,
+            "d": 0.26,
+            "w": "is"
+          },
+          {
+            "t": 8.04,
+            "d": 0.46,
+            "w": "NO"
+          },
+          {
+            "t": 8.42,
+            "d": 0.7,
+            "w": "way"
+          }
+        ]
+      },
+      {
+        "words": [
+          {
+            "t": 9.2,
+            "d": 0.3,
+            "w": "ONE"
+          },
+          {
+            "t": 9.54,
+            "d": 0.26,
+            "w": "v"
+          },
+          {
+            "t": 9.84,
+            "d": 0.9,
+            "w": "FOUR"
+          }
+        ]
+      }
+    ]
+  },
+  "audio": {
+    "gain_db": 0,
+    "loudnorm": true,
+    "mutes": [
+      [
+        3.0,
+        6.0
+      ]
+    ]
+  },
+  "hook": {
+    "text": "Five stars. One pier. Zero brakes.",
+    "dur": 2.5
+  },
+  "note": {
+    "text": "He thought the pier kept going"
+  },
+  "loopSeam": true
+}

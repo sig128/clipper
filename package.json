@@ -1,0 +1,24 @@
+{
+  "name": "clipforge",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Private AI clipping studio \u2014 long streams/gaming/IRL to vertical shorts. Single-owner, local-first.",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @clipforge/web dev",
+    "worker": "pnpm --filter @clipforge/worker dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "media:fixture": "python3 services/media/render.py fixture --out out/source.mp4",
+    "media:render": "python3 services/media/render.py render --edl examples/clutch.edl.json --out out/clip_1080x1920.mp4",
+    "compose:up": "docker compose -f infra/docker-compose.yml up -d",
+    "compose:down": "docker compose -f infra/docker-compose.yml down",
+    "media:detect": "python3 services/media/detect.py",
+    "media:intake": "python3 services/media/intake.py",
+    "publish": "pnpm --filter @clipforge/worker publish",
+    "test": "pnpm --filter @clipforge/worker test"
+  }
+}

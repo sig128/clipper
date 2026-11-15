@@ -1,0 +1,21 @@
+{
+  "name": "@clipforge/worker",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/render-worker.ts",
+    "start": "tsx src/render-worker.ts",
+    "publish": "tsx src/publish-worker.ts",
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clipforge/contracts": "workspace:*",
+    "bullmq": "^5.28.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "@types/node": "^22.10.0"
+  }
+}
