@@ -71,7 +71,7 @@ const ONLY=process.argv[2]||'';
   ok('Cutscene and spoiler flags block planning',r.flags==='cutscene:high,spoiler:high'&&r.fix==='fxCutOk'&&!r.ok,JSON.stringify(r));
  });
  await step('Launch lock keeps GTA VI after unlock',async()=>{
-  const r=await p.evaluate(()=>{const c=findClip('g6'),acc=NET.accounts[0];return{before:placeCheck(c,'yt',acc,'2026-11-18T21:00').blk.join(' | '),after:placeCheck(c,'yt',acc,'2026-11-19T12:00').ok,lock:checksFor(c).map(f=>f.k+':'+f.sev).join()}});
+  const r=await p.evaluate(()=>{const c=findClip('g6'),acc=NET.accounts[0];return{before:placeCheck(c,'yt',acc,'2026-11-18T11:00').blk.join(' | '),after:placeCheck(c,'yt',acc,'2026-11-19T12:00').ok,lock:checksFor(c).map(f=>f.k+':'+f.sev).join()}});
   ok('Launch lock keeps GTA VI after unlock',/before launch/.test(r.before)&&r.after&&r.lock==='launch:lock',JSON.stringify(r));
  });
  await step('Plan: auto-fill, no duplicates, launch lock',async()=>{
@@ -79,7 +79,7 @@ const ONLY=process.argv[2]||'';
   await p.click('[data-a="planAuto"]');await p.waitForTimeout(300);
   const r=await p.evaluate(()=>{const keys=NET.plan.map(e=>e.clip+'/'+e.plat),dup=keys.length!==new Set(keys).size,g6=NET.plan.filter(e=>e.clip==='g6').map(e=>e.at),bad=NET.plan.filter(e=>{const c=findClip(e.clip);return nHigh(checksFor(c,{plat:e.plat,when:dateOf(e.at)}))}).length;return{n:NET.plan.length,dup,g6,bad,filled:$$('.slot.fill').length}});
   await p.screenshot({path:OUT+'/plan.png'});
-  ok('Plan: auto-fill, no duplicates, launch lock',r.n>=12&&!r.dup&&r.g6.length&&r.g6.every(a=>a>='2026-11-19')&&r.bad===0&&r.filled>=4,JSON.stringify(r));
+  ok('Plan: auto-fill, no duplicates, launch lock',r.n>=12&&!r.dup&&r.g6.length&&r.g6.every(a=>a>='2026-11-18T12:00')&&r.bad===0&&r.filled>=4,JSON.stringify(r));
  });
  await step('Plan: slot sheet and fill sheet',async()=>{
   await p.click('.slot.fill');await p.waitForSelector('#slotbody');const s=await p.evaluate(()=>({rows:$$('#slotbody .spl').length,kits:$$('#slotbody [data-a="entKit"]').length}));

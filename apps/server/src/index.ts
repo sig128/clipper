@@ -10,6 +10,7 @@ import { renderGaveUp, renderJob } from "./edits.js";
 import { every, handle, onGiveUp, startJobs, stopJobs } from "./jobs.js";
 import { collectMetrics, postStatusJob, publishJob } from "./publisher.js";
 import { retentionPass } from "./retention.js";
+import { inLaunchWindow } from "./rules.js";
 import { ingestKick } from "./sources/kick.js";
 import { stopAllRecorders, tickRecorders } from "./sources/recorder.js";
 import { ingestTwitch, twitchDownloadJob } from "./sources/twitch.js";
@@ -42,8 +43,18 @@ async function main() {
 
   if (config.jobs) {
     startJobs();
-    every("twitch", 10 * 60_000, () => ingestTwitch());
-    every("kick", 5 * 60_000, () => ingestKick(), 8_000);
+    // Every 10 / 5 minutes normally; every 2 minutes in launch week, when being first matters most.
+    let lastTwitch = 0, lastKick = 0;
+    every("twitch", 2 * 60_000, async () => {
+      if (!inLaunchWindow() && Date.now() - lastTwitch < 9.5 * 60_000) return;
+      lastTwitch = Date.now();
+      return ingestTwitch();
+    });
+    every("kick", 2 * 60_000, async () => {
+      if (!inLaunchWindow() && Date.now() - lastKick < 4.5 * 60_000) return;
+      lastKick = Date.now();
+      return ingestKick();
+    }, 8_000);
     every("recorders", 60_000, () => tickRecorders(), 15_000);
     every("metrics", 30 * 60_000, () => collectMetrics(), 60_000);
     every("retention", 6 * 3600_000, () => retentionPass(), 120_000);

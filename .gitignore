@@ -21,3 +21,4 @@ apps/studio/test/e2e4-out/
 apps/web/public/studio.html
 next-env.d.ts
 *.tsbuildinfo
+apps/studio/test/_v4.html

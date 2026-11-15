@@ -11,6 +11,7 @@ import { getSetting, one, q, setSetting } from "../db.js";
 import { enqueue, Permanent } from "../jobs.js";
 import { clipScore, upsertClip } from "../library.js";
 import { downloadTo, probe, stillFrame, storeFile, workPath } from "../media.js";
+import { inLaunchWindow } from "../rules.js";
 
 const GAMES: Record<string, string> = { "Grand Theft Auto V": "gta5", "Grand Theft Auto VI": "gta6" };
 export const TWITCH_SCOPES = ["editor:manage:clips"];
@@ -143,9 +144,12 @@ export async function ingestTwitch(now = new Date()): Promise<{ clips: number; d
   );
   const byBroadcaster = new Map(ledger.filter((s) => s.platform_user_id).map((s) => [s.platform_user_id!, s.id]));
 
-  const since24 = new Date(now.getTime() - 24 * 3600_000).toISOString();
+  const rush = inLaunchWindow(now);
   for (const [gameId, game] of Object.entries(ids)) {
-    const res = await t.clips({ gameId, startedAt: since24, first: 50 });
+    // Launch week: GTA VI clips from the last 6 hours, 100 at a time (the timer also runs every 2 minutes then).
+    const hot = rush && game === "gta6";
+    const since = new Date(now.getTime() - (hot ? 6 : 24) * 3600_000).toISOString();
+    const res = await t.clips({ gameId, startedAt: since, first: hot ? 100 : 50 });
     for (const c of res.data ?? []) { await upsertClip(toClip(c, game, byBroadcaster.get(c.broadcaster_id) ?? null)); n++; }
   }
 

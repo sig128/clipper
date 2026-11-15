@@ -115,6 +115,18 @@ test("the manager changes slots (2-hour rule enforced), pauses accounts and read
   assert.deepEqual(seen.map((r) => r.id), ["manager", "worker-live", "worker-man"]);
 });
 
+test("trending_now and the launch playbook are there for every bot", async () => {
+  const t = await call(keys["worker-live"], "trending_now", { hours: 24, game: "any" });
+  assert.equal(t.isError, false, JSON.stringify(t.data));
+  assert.deepEqual(t.data.rising_clips.map((c: any) => c.id), ["tw:b", "up:a"]);
+  assert.equal(t.data.launch.next_unlock.region, "New Zealand");
+  const b = await call(keys["worker-live"], "get_brief");
+  assert.ok(b.data.launch_playbook.some((l: string) => /US can't play|until Thu 06:00/.test(l)));
+  assert.ok(b.data.edges[0].launch_titles.length >= 5);
+  const me = await call(keys["worker-live"], "whoami");
+  assert.equal(me.data.now.launch.first_unlock, "2026-11-18T11:00:00.000Z");
+});
+
 test("the owner token also works on /mcp with the manager's tools", async () => {
   const r = await rpc("owner-test-token-0123456789abcdef", "tools/list");
   assert.ok(r.body.result.tools.some((t: any) => t.name === "accounts_overview"));

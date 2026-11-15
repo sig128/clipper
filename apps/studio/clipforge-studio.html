@@ -634,7 +634,7 @@ const SOURCES=[
  {id:'s1',title:'Free roam night (capture card)',plat:'Capture card',kind:'gta',v:'chase',game:'gta5',dur:7920,w:1920,h:1080,fps:60,got:'Recorded from your console with a capture card',rights:'own',when:'Yesterday',status:'done'},
  {id:'s4',title:'RP night: the bank job (Marcus’s view)',plat:'Kick',kind:'gta',v:'rp',game:'gtarp',dur:14400,w:1920,h:1080,fps:60,got:'The streamer downloaded it from his Kick dashboard and sent it to you',rights:'unknown',owner:'Marcus',when:'2 days ago',status:'done'},
  {id:'s6',title:'Story missions, first evening',plat:'Capture card',kind:'gta',v:'cut',game:'gta5',dur:5400,w:1920,h:1080,fps:60,got:'Recorded from your console with a capture card',rights:'own',when:'3 days ago',status:'done'},
- {id:'s7',title:'Launch night capture (example)',plat:'Capture card',kind:'gta',v:'beach',game:'gta6',dur:3600,w:3840,h:2160,fps:60,got:'An example of a GTA VI recording. There is no real GTA VI footage before 19 November.',rights:'own',when:'Example',status:'done'},
+ {id:'s7',title:'Launch night capture (example)',plat:'Capture card',kind:'gta',v:'beach',game:'gta6',dur:3600,w:3840,h:2160,fps:60,got:'An example of a GTA VI recording. There is no real GTA VI footage before the first unlock (Wed 18 November, 12:00 Norway time).',rights:'own',when:'Example',status:'done'},
  {id:'s2',title:'IRL walk and donation reads',plat:'Kick',kind:'irl',v:'',dur:12600,w:1920,h:1080,fps:30,got:'You downloaded it from your Kick dashboard and dropped it in (Kick doesn’t let apps download videos)',rights:'own',when:'3 days ago',status:'done'},
  {id:'s3',title:'Podcast episode 41',plat:'Upload',kind:'pod',v:'',dur:5220,w:3840,h:2160,fps:30,got:'Uploaded from your computer',rights:'own',when:'5 days ago',status:'done'},
  {id:'s5',title:'Trailer watch-along',plat:'YouTube',kind:'talk',v:'react',dur:7380,w:1920,h:1080,fps:30,got:'Fetched from your YouTube channel',rights:'own',rightsNote:'It shows a game trailer, so keep clips short',when:'Just now',status:'processing'}
@@ -682,7 +682,7 @@ const GTA_CLIPS=[
   letterbox:[[0,30]],prep:{hook:'Nobody saw this ending coming',note:''}},
  {id:'g6',src:'s7',kind:'gta',v:'beach',game:'gta6',lane:'chaos',in:1220,dur:24,mode:'gaming',title:'First drive along the beach at sunset',score:82,parts:{hook:80,story:70,action:66,vertical:88,fresh:96},pen:0,
   why:'An example launch-night clip: the new map at golden hour. It stays locked until GTA VI unlocks.',
-  heads:'Example clip. GTA VI footage can only be planned for 19 November or later.',
+  heads:'Example clip. GTA VI footage can only be planned from Wed 18 November, 12:00 Norway time.',
   evidence:[['Ocean view',4],['Palm road',12],['Sunset',20]],layout:'full',cx:.5,payoff:12,cleanIn:2,cleanOut:22,vers:['chrono','clean'],
   tags:'gta 6 vi beach sunset drive leonida vice city first look',cover:'FIRST DRIVE',
   hooks:['First drive in Leonida','POV: your first sunset in Vice City','Day one. No spoilers.'],
@@ -2055,7 +2055,7 @@ A.autoResume=()=>{const a=S.auto;if(!a)return;a.running=true;renderTop();updActi
 A.useRecipe=t=>startAuto(t.dataset.k);
 
 /* ================= GTA build: launch lock, checks, platform cuts, overlays, real export ================= */
-const UNLOCK=new Date(2026,10,19,0,0,0);
+const UNLOCK=new Date(Date.UTC(2026,10,18,11,0,0)); // first official unlock: New Zealand midnight = Wed 18 Nov 12:00 Norway
 const DAYMS=864e5;
 const GAMES={gta6:'GTA VI',gta5:'GTA V',gtarp:'GTA RP',other:'Other'};
 const LANES={chaos:'Chaos moments',guide:'Guides',rp:'Roleplay',arabic:'Arabic',partner:'Partner campaigns'};
@@ -2113,8 +2113,8 @@ function titleFor(c,ev){ev=ev||edView(c);return((ev.hook&&ev.hook.text)||ev.titl
 function checksFor(c,o={}){
  const ev=edView(c),s=srcOf(c),F=[],add=(k,sev,t,w,fx=[],plat)=>F.push({k,sev,t,w,fx,plat}),P=o.plat?[o.plat]:PLK;
  if(ev.game==='gta6'){
-  if(o.when){if(o.when<UNLOCK)add('launch','high','GTA VI footage before launch','Rockstar removes pre-release footage of any kind. GTA VI unlocks Thursday 19 November at midnight.',o.fixLaunch?[['Move to launch day','fxLaunch']]:[])}
-  else if(beforeLaunch())add('launch','lock','Locked until launch','You can edit and export now. It can be planned for 19 November at midnight or later.');
+  if(o.when){if(o.when<UNLOCK)add('launch','high','GTA VI footage before launch','Rockstar removes pre-release footage of any kind. GTA VI unlocks first in New Zealand: Wed 18 November, 12:00 Norway time.',o.fixLaunch?[['Move to launch day','fxLaunch']]:[])}
+  else if(beforeLaunch())add('launch','lock','Locked until launch','You can edit and export now. It can be planned from Wed 18 November, 12:00 Norway time.');
  }
  if(c.letterbox&&!ev.rev.cutscene&&overl(c.letterbox,ev.trimIn,ev.trimOut)){
   const all=c.letterbox.some(([a,b])=>a<=ev.trimIn+.5&&b>=ev.trimOut-.5);
@@ -2362,7 +2362,7 @@ function meterHTML(days){
 }
 function launchStrip(days){
  const i=days.findIndex(isLaunch);if(i<0)return'';const day=isoDay(days[i]),n=NET.plan.filter(e=>e.at.slice(0,10)===day).length,tot=NET.accounts.reduce((s,a)=>s+a.slots.length*a.plats.length,0);
- return `<div class="launchbar"><span class="lb-n mono">${n}/${tot}</span><div class="grow"><b>Launch day is ${fmtDay(days[i])}</b><div class="t2 sm">GTA VI unlocks at midnight. ${n?`${n} posts are planned for launch day.`:'Nothing is planned for launch day yet.'} GTA VI clips can’t be planned any earlier.</div></div><button class="btn sm" data-a="planDay" data-k="${i}">Show launch day</button></div>`;
+ return `<div class="launchbar"><span class="lb-n mono">${n}/${tot}</span><div class="grow"><b>Launch day is ${fmtDay(days[i])}</b><div class="t2 sm">GTA VI unlocks at 12:00 (New Zealand first; the US about 18 hours later). ${n?`${n} posts are planned for launch day.`:'Nothing is planned for launch day yet.'} GTA VI clips can’t be planned any earlier.</div></div><button class="btn sm" data-a="planDay" data-k="${i}">Show launch day</button></div>`;
 }
 function slotHTML(acc,d,t,now){
  const at=atOf(d,t),es=NET.plan.filter(e=>e.acct===acc.id&&e.at===at),past=dateOf(at)<now;
@@ -2480,13 +2480,13 @@ matchMedia('(max-width:760px)').addEventListener('change',()=>{if(S.view==='plan
 function launchBarHTML(){
  const ms=UNLOCK-new Date();if(ms<-14*DAYMS)return'<div id="launchbar"></div>';
  const d=Math.floor(ms/DAYMS),h=Math.floor(ms%DAYMS/36e5),n=NET.plan.filter(e=>e.at.slice(0,10)===isoDay(UNLOCK)).length;
- return `<div class="launchbar" id="launchbar"><span class="lb-n mono">${ms>0?(d>0?`${d}d ${h}h`:`${h}h`):'Out'}</span><div class="grow"><b>${ms>0?'GTA VI unlocks Thursday 19 November at midnight':'GTA VI is out'}</b><div class="t2 sm">${n?`${n} posts planned for launch day.`:'Nothing planned for launch day yet.'} GTA VI clips can’t be planned before unlock.</div></div><button class="btn sm" data-a="go" data-k="plan">Open plan</button></div>`;
+ return `<div class="launchbar" id="launchbar"><span class="lb-n mono">${ms>0?(d>0?`${d}d ${h}h`:`${h}h`):'Out'}</span><div class="grow"><b>${ms>0?'GTA VI unlocks Wednesday 18 November at 12:00 (New Zealand first)':'GTA VI is out'}</b><div class="t2 sm">${n?`${n} posts planned for launch day.`:'Nothing planned for launch day yet.'} GTA VI clips can’t be planned before unlock.</div></div><button class="btn sm" data-a="go" data-k="plan">Open plan</button></div>`;
 }
 /* ---- Hook tab ---- */
 SIDEF.hook=function(){
  const c=ED.c,g=ED.game,tpl=[...new Set([...(c.hooks||[]),...(HOOKT[g]||HOOKT.other)])].slice(0,6);
  return `<div class="ctl"><div class="ctl-h">Game</div><div class="seg full">${Object.entries(GAMES).map(([k,n])=>`<button class="${g===k?'on':''}" data-a="gameSet" data-k="${k}">${n}</button>`).join('')}</div></div>
- ${g==='gta6'&&beforeLaunch()?`<div class="note" style="margin:-6px 0 16px">${ic('lock','s')}<div>Locked until Thursday 19 November at midnight. You can edit and export now. Planning opens at unlock.</div></div>`:''}
+ ${g==='gta6'&&beforeLaunch()?`<div class="note" style="margin:-6px 0 16px">${ic('lock','s')}<div>Locked until the first unlock: Wed 18 November, 12:00 Norway time. You can edit and export now. Planning opens at unlock.</div></div>`:''}
  <div class="ctl"><div class="ctl-h">Hook<span class="t3" style="font-weight:500">first seconds, on screen</span></div><input class="in" id="hookin" data-i="hookText" data-ch="hookHist" value="${esc(ED.hook.text)}" maxlength="70" placeholder="Five stars. One pier. Zero brakes." aria-label="Hook text">
   <div class="chips sm hint-chips">${tpl.map((h,i)=>`<button class="chip" data-a="hookPick" data-k="${i}" title="Use this hook">${esc(h)}</button>`).join('')}</div></div>
  <div class="ctl"><div class="ctl-h">Hook length<output id="o-hdur">${ED.hook.dur.toFixed(1)} s</output></div><input type="range" min="15" max="40" value="${Math.round(ED.hook.dur*10)}" data-i="hookDur" data-ch="hookHist" aria-label="Hook length"></div>

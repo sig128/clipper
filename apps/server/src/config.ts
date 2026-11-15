@@ -44,6 +44,14 @@ export const config = {
   renderConcurrency: Number(env.RENDER_CONCURRENCY ?? 1),
   /** Most live streams recorded at once. */
   maxRecorders: Number(env.MAX_RECORDERS ?? 3),
+  /**
+   * GTA VI rolls out by region: New Zealand first (11:00 UTC Wed 18 Nov), the US about
+   * 18 hours later. Footage is fair game from the first official unlock. Launch mode runs
+   * from then until 72 hours after the US unlock.
+   */
+  gta6UnlockUtc: env.GTA6_UNLOCK_UTC ?? "2026-11-18T11:00:00Z",
+  launchEndUtc: env.LAUNCH_END_UTC ?? "2026-11-22T05:00:00Z",
+  launchMode: env.LAUNCH_MODE !== "off",
 };
 
 export const has = {

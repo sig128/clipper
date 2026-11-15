@@ -4,6 +4,7 @@ import { log } from "./activity.js";
 import { config } from "./config.js";
 import { q } from "./db.js";
 import type { EdgeId, Plat } from "./edges.js";
+import { spacingMs } from "./rules.js";
 import { addDays, labelIn, ymdIn, zonedToUtc } from "./time.js";
 
 export interface AccountRow { id: string; edge_id: EdgeId; platform: Plat; handle: string | null; slots: string[]; tz: string; paused: boolean }
@@ -33,7 +34,7 @@ export async function openSlots(accts: AccountRow[], days = 2, now = new Date())
         const at = zonedToUtc(ymd, s, a.tz);
         if (at.getTime() < now.getTime() + 10 * 60_000) continue;
         if (at.getTime() > now.getTime() + days * 86400_000) continue;
-        if (taken.some((t) => t.account_id === a.id && Math.abs(t.at.getTime() - at.getTime()) < 2 * 3600_000)) continue;
+        if (taken.some((t) => t.account_id === a.id && Math.abs(t.at.getTime() - at.getTime()) < spacingMs(at))) continue;
         out.push({ account_id: a.id, platform: a.platform, slot: s, at: at.toISOString(), audience_time: labelIn(at, a.tz), owner_time: labelIn(at, config.ownerTz) });
       }
     }

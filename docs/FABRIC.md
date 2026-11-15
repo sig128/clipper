@@ -1,6 +1,6 @@
 # FABRIC: the GTA posting system
 
-_Added 2026-11-13 for GTA VI launch season (unlock: Thursday 19 November 2026, local midnight)._
+_Added 2026-11-13 for GTA VI launch season. First unlock: New Zealand, Wed 18 November 2026 11:00 UTC (12:00 Norway); the US about 18 hours later._
 
 One loop runs all day. A person approves each post in about two minutes.
 

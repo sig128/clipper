@@ -128,5 +128,5 @@ test("Plan rules: times two hours apart, one edit per platform, no GTA VI before
   const plan: PlanEntry[] = [{ id: "e1", acct: "a1", plat: "yt", at: "2026-11-20T12:00", clip: "g1", title: "t", caption: "", status: "planned" }];
   assert.match(planBlockers({ id: "e2", clip: "g1", plat: "yt", acct: "a3", at: "2026-11-21T12:00" }, plan, "2026-11-19T10:00")[0], /once per platform/);
   assert.deepEqual(planBlockers({ id: "e3", clip: "g1", plat: "tt", acct: "a1", at: "2026-11-21T12:00" }, plan, "2026-11-19T10:00"), []);
-  assert.match(planBlockers({ id: "e4", clip: "g6", plat: "yt", acct: "a1", at: "2026-11-18T21:00", game: "gta6" }, plan, "2026-11-14T10:00").join(), /before launch/);
+  assert.match(planBlockers({ id: "e4", clip: "g6", plat: "yt", acct: "a1", at: "2026-11-18T11:00", game: "gta6" }, plan, "2026-11-14T10:00").join(), /before launch/);
 });

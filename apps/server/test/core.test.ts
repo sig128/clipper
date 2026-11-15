@@ -3,7 +3,7 @@ import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
 import { actorFrom, rotateBotKey } from "../src/auth.js";
 import { q } from "../src/db.js";
-import { spoilerWords, editChecks, GTA6_UNLOCK } from "../src/rules.js";
+import { spoilerWords, editChecks, GTA6_UNLOCK, inLaunchWindow, spacingMs, maxPerDay, launchStatus } from "../src/rules.js";
 import { accounts, openSlots, setSlots } from "../src/schedule.js";
 import { zonedToUtc, ymdIn, hmIn, tzOffsetMinutes } from "../src/time.js";
 import { closeDb, resetDb } from "./helpers.js";
@@ -36,7 +36,7 @@ test("bot keys: shown once, hashed, old key stops working", async () => {
 
 test("time zones: New York and Norway wall times, across the DST change", () => {
   assert.equal(zonedToUtc("2026-11-19", "00:00", "Europe/Oslo").toISOString(), "2026-11-18T23:00:00.000Z");
-  assert.equal(GTA6_UNLOCK.toISOString(), "2026-11-18T23:00:00.000Z");
+  assert.equal(GTA6_UNLOCK.toISOString(), "2026-11-18T11:00:00.000Z", "first official unlock: New Zealand midnight");
   assert.equal(zonedToUtc("2026-11-20", "19:30", "America/New_York").toISOString(), "2026-11-21T00:30:00.000Z");
   assert.equal(zonedToUtc("2026-07-01", "19:30", "America/New_York").toISOString(), "2026-07-01T23:30:00.000Z");
   const d = new Date("2026-11-21T00:30:00Z");
@@ -67,4 +67,22 @@ test("spoiler and edit checks", () => {
   const c = editChecks({ hook: "", permission: "none", hasMedia: false, durationS: 5 });
   assert.deepEqual(c.filter((x) => x.sev === "block").map((x) => x.k).sort(), ["media", "orig", "rights"]);
   assert.deepEqual(editChecks({ hook: "LEONIDA MAN loses airboat", commentary: "Classic.", permission: "own", hasMedia: true, durationS: 20 }), []);
+});
+
+test("launch window: from the New Zealand unlock until 72 hours after the US unlock", () => {
+  assert.equal(inLaunchWindow(new Date("2026-11-18T10:59:00Z")), false);
+  assert.equal(inLaunchWindow(new Date("2026-11-18T11:00:00Z")), true);
+  assert.equal(inLaunchWindow(new Date("2026-11-22T04:59:00Z")), true);
+  assert.equal(inLaunchWindow(new Date("2026-11-22T05:00:00Z")), false);
+  assert.equal(spacingMs(new Date("2026-11-19T12:00:00Z")), 90 * 60_000);
+  assert.equal(spacingMs(new Date("2026-11-25T12:00:00Z")), 120 * 60_000);
+  assert.equal(maxPerDay(new Date("2026-11-19T12:00:00Z")), 8);
+  assert.equal(maxPerDay(new Date("2026-11-16T12:00:00Z")), 6);
+  const pre = launchStatus(new Date("2026-11-16T12:00:00Z"));
+  assert.equal(pre.phase, "pre-launch");
+  assert.equal(pre.next_unlock?.region, "New Zealand");
+  const roll = launchStatus(new Date("2026-11-18T21:00:00Z"));
+  assert.match(roll.phase, /US can't play yet/);
+  assert.deepEqual(roll.unlocked_regions, ["New Zealand", "Australia (east)", "Japan, Korea", "UAE"]);
+  assert.equal(roll.next_unlock?.region, "Europe (CET)");
 });

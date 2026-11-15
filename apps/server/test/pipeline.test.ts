@@ -84,7 +84,7 @@ test("duplicates, other edges' edits and posts within 2 hours are refused", asyn
 test("GTA VI footage can't be scheduled before it unlocks", async () => {
   await q("update clips set game = 'gta6' where id = 'up:gator'");
   const { edit } = await createEdit({ edge: "live", clipId: "up:gator", hook: "First look", commentary: "Day one", by: "worker-live" });
-  const r = await schedulePost({ editId: edit.id, at: "2026-11-18T22:00:00Z", title: "First look", by: "worker-live", edgeScope: "live" });
+  const r = await schedulePost({ editId: edit.id, at: "2026-11-18T10:00:00Z", title: "First look", by: "worker-live", edgeScope: "live" });
   assert.equal(r.scheduled.length, 0);
   assert.ok(r.refused.every((x) => x.reasons.some((m) => /before launch/.test(m))));
   await q("update clips set game = 'gta5' where id = 'up:gator'");
@@ -165,4 +165,20 @@ test("a paused account's planned post is cancelled at send time", async () => {
   await drain(["publish"]);
   assert.equal((await one("select status from posts where id = $1", [r.scheduled[0].id]))!.status, "cancelled");
   assert.equal(uploads.length, before, "nothing sent for a paused account");
+});
+
+test("launch week allows posts 90 minutes apart; outside it the 2-hour rule holds", async () => {
+  await upsertClip({ id: "up:l1", source: "upload", title: "Launch clip 1", media_key: (await one("select media_key from clips where id = 'up:gator'"))!.media_key, duration_s: 12, game: "gta6", score: 5 });
+  await upsertClip({ id: "up:l2", source: "upload", title: "Launch clip 2", media_key: (await one("select media_key from clips where id = 'up:gator'"))!.media_key, duration_s: 12, game: "gta6", score: 5 });
+  await upsertClip({ id: "up:l3", source: "upload", title: "Late clip", media_key: (await one("select media_key from clips where id = 'up:gator'"))!.media_key, duration_s: 12, game: "gta6", score: 5 });
+  const mk = async (clip: string) => (await createEdit({ edge: "onepct", clipId: clip, hook: "GTA 6 first 10 minutes", commentary: "No spoilers", by: "worker-onepct" })).edit.id;
+  const a = await schedulePost({ editId: await mk("up:l1"), accountIds: ["onepct-tt"], at: "2026-11-19T12:00:00Z", title: "GTA 6 first 10 minutes (no spoilers)", by: "worker-onepct", edgeScope: "onepct" });
+  assert.equal(a.scheduled.length, 1, JSON.stringify(a.refused));
+  const b = await schedulePost({ editId: await mk("up:l2"), accountIds: ["onepct-tt"], at: "2026-11-19T13:40:00Z", title: "How big is the GTA 6 map?", by: "worker-onepct", edgeScope: "onepct" });
+  assert.equal(b.scheduled.length, 1, "100 minutes apart is fine in launch week: " + JSON.stringify(b.refused));
+  const c = await schedulePost({ editId: await mk("up:l3"), accountIds: ["onepct-tt"], at: "2026-11-19T14:30:00Z", title: "Too close", by: "worker-onepct", edgeScope: "onepct" });
+  assert.match(c.refused[0].reasons.join(" "), /Less than 90 minutes/);
+  await q("update posts set at = at + interval '10 days' where account_id = 'onepct-tt'");
+  const d = await schedulePost({ editId: (await one("select id from edits where clip_id = 'up:l3'"))!.id, accountIds: ["onepct-tt"], at: "2026-11-29T14:30:00Z", title: "Outside launch week", by: "worker-onepct", edgeScope: "onepct" });
+  assert.match(d.refused[0].reasons.join(" "), /Less than 2 hours/);
 });

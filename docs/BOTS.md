@@ -68,8 +68,26 @@ Edge notes to add under the prompt:
 >
 > At 09:00 Norway time, also write a short report for the owner: views by edge and platform, the best post per edge, slot changes made, and what to try next.
 
+## Launch week: timing
+
+GTA VI rolls out by region. New Zealand unlocks first (Wed 18 Nov, 12:00 Norway
+time), then Australia, Asia and Europe; the US and Canada unlock about 18 hours later
+(Thu 19 Nov, 06:00 Norway). In between, the game is out but most of the audience can't
+play yet, so demand for footage peaks while supply is thin. That window matters most.
+
+| When (Norway time) | Workers | Manager |
+|---|---|---|
+| Now → Wed 12:00 | every 2 h; GTA V countdown posts to warm the accounts | every 6 h |
+| Wed 12:00 → Sun 22 Nov 06:00 | **every 15 min**; `trending_now` first | **every 2 h** |
+| After | every 2 h | every 6 h |
+
+Add to the worker prompt for launch week:
+
+> Launch week: call `trending_now` first. If a usable clip is rising fast, make the edit and post it right away (`at` about 10 minutes ahead) instead of waiting for the next fixed slot. Until the US unlocks (Thu 06:00 Norway), aim at people who can't play yet: "first look", "before you play", "no spoilers". Use the brief's `launch_titles` only when the clip actually shows it. The tools allow up to 8 posts per account per day, at least 90 minutes apart, until Sun 22 Nov 06:00 Norway.
+
 ## What the tools refuse
 
-Clips without a permission record, GTA VI footage before Thu 19 Nov midnight
-(Norway), story spoilers, cutscenes, posts without our own hook, the same clip on
-two of our accounts on one platform, and posts closer than 2 hours on one account.
+Clips without a permission record, GTA VI footage before the first unlock (Wed 18 Nov,
+12:00 Norway), story spoilers, cutscenes, posts without our own hook, the same clip on
+two of our accounts on one platform, and posts closer than 2 hours on one account
+(90 minutes in launch week).

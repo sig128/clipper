@@ -81,7 +81,8 @@ export type PublicationIntent = z.infer<typeof PublicationIntent>;
 export const intentKey = (revisionId: string, plat: Platform, acct: string) => `${revisionId}:${plat}:${acct}`;
 
 /** GTA VI unlocks at local midnight on 19 November 2026. Rockstar removes pre-release footage. */
-export const GTA6_UNLOCK_LOCAL = "2026-11-19T00:00";
+/** First official unlock (New Zealand midnight = 11:00 UTC), as Norway wall time. The rollout reaches the US about 18 hours later. */
+export const GTA6_UNLOCK_LOCAL = "2026-11-18T12:00";
 
 /** Daily times must be at least two hours apart; at most six a day. */
 export function parseTimes(input: string): { times?: string[]; err?: string } {

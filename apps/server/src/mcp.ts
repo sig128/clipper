@@ -11,14 +11,14 @@ import { log, recent } from "./activity.js";
 import type { Actor } from "./auth.js";
 import { config } from "./config.js";
 import { getSetting, one, q } from "./db.js";
-import { EDGES, EXPERIMENTS, HOUSE_RULES, PLAT_NAME, UP_PLATFORM, edgeDef, type EdgeId } from "./edges.js";
+import { EDGES, EXPERIMENTS, HOUSE_RULES, LAUNCH_PLAYBOOK, PLAT_NAME, UP_PLATFORM, edgeDef, type EdgeId } from "./edges.js";
 import { createEdit, EditRefused, getEdit, queueRender } from "./edits.js";
 import { Permanent } from "./jobs.js";
 import { clipView, findClips, getClip } from "./library.js";
 import { mediaUrl } from "./media.js";
 import { cancelPost, listPosts, schedulePost } from "./posts.js";
 import { uploadPost } from "./publisher.js";
-import { GTA6_UNLOCK } from "./rules.js";
+import { GTA6_UNLOCK, launchStatus } from "./rules.js";
 import { accounts, openSlots, setPaused, setSlots } from "./schedule.js";
 import { labelIn } from "./time.js";
 
@@ -43,8 +43,24 @@ function guard<A>(fn: (args: A) => Promise<unknown>) {
 
 const now = () => {
   const d = new Date();
-  return { utc: d.toISOString(), norway: labelIn(d, config.ownerTz), new_york: labelIn(d, "America/New_York"), gta6_unlocked: d >= GTA6_UNLOCK, gta6_unlocks: GTA6_UNLOCK.toISOString() };
+  return { utc: d.toISOString(), norway: labelIn(d, config.ownerTz), new_york: labelIn(d, "America/New_York"), gta6_unlocked: d >= GTA6_UNLOCK, launch: launchStatus(d) };
 };
+
+/** What's moving right now: fastest-rising clips, the biggest live GTA streams, and permitted streamers live. */
+async function trending(hours: number, game: "gta6" | "gta5" | "any") {
+  const rows = await q<any>(
+    `select c.*, case when c.source = 'upload' then 'own' else coalesce(s.permission, 'none') end as permission
+     from clips c left join streamers s on s.id = c.streamer_id
+     where c.status <> 'rejected' and coalesce(c.created_at_source, c.ingested_at) > now() - ($1 || ' hours')::interval
+       and ($2 = 'any' or c.game = $2)
+     order by c.score desc limit 15`,
+    [String(hours), game],
+  );
+  const kick = await getSetting<{ at: string; streams: { slug: string; title: string; viewers: number; category: string }[] }>("kick_live");
+  const live = (kick?.streams ?? []).filter((s) => game === "any" || (game === "gta6" ? /\bvi\b|6/i.test(s.category) : !/\bvi\b|6/i.test(s.category))).slice(0, 10);
+  const permitted = await q("select platform, login, display_name, permission, live_title, live_viewers from streamers where is_live and permission <> 'none' order by live_viewers desc nulls last");
+  return { rising_clips: rows.map(clipView), kick_live: { checked: kick?.at ?? null, streams: live }, permitted_live: permitted, launch: launchStatus() };
+}
 
 /** Per-account numbers for the manager: last 7 days of posts and their latest readings. */
 async function accountStats(days: number, edge?: string | null) {
@@ -108,7 +124,17 @@ export function buildServer(bot: Bot): McpServer {
   server.registerTool("get_brief", { description: "The edge brief (what this account network posts and how), the manager's current guidance, the house rules and the open experiments.", inputSchema: { ...edgeArg } }, guard(async (a: { edge?: string }) => {
     const ids = isManager ? (a.edge ? [a.edge] : EDGES.map((e) => e.id)) : [myEdge!];
     const rows = await q<{ id: string; name: string; brief: any; guidance: string }>("select id, name, brief, guidance from edges where id = any($1) order by id", [ids]);
-    return { edges: rows.map((r) => ({ id: r.id, name: r.name, ...r.brief, manager_guidance: r.guidance || null })), house_rules: HOUSE_RULES, experiments: EXPERIMENTS, now: now() };
+    return { edges: rows.map((r) => ({ id: r.id, name: r.name, ...r.brief, manager_guidance: r.guidance || null })), house_rules: HOUSE_RULES, launch_playbook: LAUNCH_PLAYBOOK, experiments: EXPERIMENTS, now: now() };
+  }));
+
+  server.registerTool("trending_now", {
+    description: "What's moving right now: the fastest-rising clips (with whether we may use them), the biggest live GTA streams on Kick, and permitted streamers who are live. In launch week, call this first on every run.",
+    inputSchema: {
+      hours: z.number().int().min(1).max(24).default(3).describe("How far back to look"),
+      game: z.enum(["gta6", "gta5", "any"]).optional().describe("Default: gta6 once it's out, otherwise any"),
+    },
+  }, guard(async (a: { hours: number; game?: "gta6" | "gta5" | "any" }) => {
+    return trending(a.hours, a.game ?? (Date.now() >= GTA6_UNLOCK.getTime() ? "gta6" : "any"));
   }));
 
   server.registerTool("find_clips", {

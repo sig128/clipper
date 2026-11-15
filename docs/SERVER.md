@@ -14,8 +14,8 @@ uploads ──────┘   (Postgres + /data)        (render.py)  (4 slots/
 
 | Every | What |
 |---|---|
-| 10 min | Twitch: top GTA V / GTA VI clips of the last 24 h, plus every permitted streamer's new clips; official downloads for channels where our Twitch account is an editor |
-| 5 min | Kick: live GTA streams (official API) and which permitted streamers are live |
+| 10 min (2 min in launch week) | Twitch: top GTA V / GTA VI clips of the last 24 h, plus every permitted streamer's new clips; official downloads for channels where our Twitch account is an editor |
+| 5 min (2 min in launch week) | Kick: live GTA streams (official API) and which permitted streamers are live |
 | 1 min | Recorder: records permitted streamers with "record" ticked; each 5-minute segment is scanned by `detect.py` and its best moment kept as a 28 s clip |
 | 2 s | Job queue (Postgres): renders, publishing at slot time, status checks, downloads |
 | 30 min | Metrics: each post's numbers at 1 h, 3 h, 24 h, 72 h and 7 days |
@@ -24,7 +24,7 @@ uploads ──────┘   (Postgres + /data)        (render.py)  (4 slots/
 ## Rules enforced in code
 
 Every edit and post passes the same checks whoever asks: permission record for other
-people's footage, no GTA VI footage before Thu 19 Nov 2026 00:00 Norway, spoiler words,
+people's footage, no GTA VI footage before the first unlock (Wed 18 Nov 2026 11:00 UTC, New Zealand), spoiler words,
 cutscene flag, our own hook, at least 2 hours between posts on an account, at most 6 a
 day, each edit once per platform, and never the same clip on two of our accounts on one
 platform. Publishing is idempotent: the post's intent key goes to Upload-Post as the

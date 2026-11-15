@@ -27,6 +27,8 @@ export interface EdgeBrief {
   sources: string;
   avoid: string[];
   hashtags: string[];
+  /** Ready titles for the launch window; use one only when the clip actually shows it. */
+  launch_titles: string[];
 }
 
 export interface EdgeDef {
@@ -70,6 +72,14 @@ export const EDGES: EdgeDef[] = [
         "Headlines about real people or real crimes; the joke is the game.",
       ],
       hashtags: ["#GTA6", "#GTAVI", "#Leonida", "#FloridaMan", "#GTA"],
+      launch_titles: [
+        "LEONIDA MAN gets 5 stars in his first 10 minutes",
+        "LEONIDA MAN meets his first gator",
+        "LEONIDA WOMAN steals a cop car on day one",
+        "LEONIDA MAN tries the airboat. The airboat wins.",
+        "Day 1 in Leonida and the police are already done with us",
+        "Leonida NPCs react to LEONIDA MAN",
+      ],
     },
   },
   {
@@ -103,6 +113,15 @@ export const EDGES: EdgeDef[] = [
         "Glitch or exploit tutorials that Rockstar patches or bans for.",
       ],
       hashtags: ["#GTA6", "#GTAVI", "#GTA6Tips", "#GTA6Secrets", "#Leonida"],
+      launch_titles: [
+        "GTA 6 first 10 minutes (no spoilers)",
+        "How big is the GTA 6 map? We drove across it",
+        "GTA 6 wanted system explained in 30 seconds",
+        "How to make money fast in GTA 6 (day one)",
+        "Is GTA 6 worth it? 60 seconds, no spoilers",
+        "The GTA 6 detail nobody noticed on day one",
+        "GTA 6 before you play: 5 things to know",
+      ],
     },
   },
   {
@@ -136,8 +155,28 @@ export const EDGES: EdgeDef[] = [
         "Campaign rules: put the required handle/hashtag on screen when the campaign asks.",
       ],
       hashtags: ["#GTA6", "#GTAVI", "#Kick", "#Twitch", "#GTARP"],
+      launch_titles: [
+        "Streamers' first reaction to Leonida",
+        "His first 5 minutes in GTA 6 went exactly like this",
+        "Streamers vs GTA 6 police, day one",
+        "Streamer League: launch day top 3",
+        "Chat told him not to take the boat",
+      ],
     },
   },
+];
+
+/**
+ * The rollout gives an ~18-hour window where the game is out (New Zealand first) but
+ * most of the audience, the US especially, can't play yet: demand for footage is at its
+ * peak and supply is thin. Being first matters most there.
+ */
+export const LAUNCH_PLAYBOOK = [
+  "Pre-launch (now until Wed 18 Nov 12:00 Norway): warm the accounts with GTA V clips framed as the countdown ('3 days to Leonida'). Never repost Rockstar trailers.",
+  "Rollout (Wed 12:00 Norway until Thu 06:00 Norway, when the US unlocks): the game is out in New Zealand, Australia, Asia and Europe but not the US. Post first-look footage for people waiting: 'before you play', 'first look', 'no spoilers'. This is the window that matters most.",
+  "Launch week (until Sun 22 Nov 06:00 Norway): up to 8 posts per account per day, at least 90 minutes apart. Run every 15 minutes, call trending_now first, and post a fast-rising moment as soon as it's rendered instead of waiting for the next fixed slot.",
+  "Being first beats being polished, but the payoff still has to land in the first second. Use a launch title only when the clip actually shows it.",
+  "Spoiler-free is a selling point at launch: say 'no spoilers' in the caption. The tools block story spoilers and cutscenes anyway.",
 ];
 
 export const EXPERIMENTS = [
@@ -148,7 +187,8 @@ export const EXPERIMENTS = [
 
 export const HOUSE_RULES = [
   "Four posts per account per day, at least 2 hours apart. Each edit goes out once per platform, and never on two of our accounts on the same platform.",
-  "No GTA VI footage before it unlocks (Thu 19 Nov 2026, midnight in Norway). Rockstar removes pre-release footage.",
+  "No GTA VI footage before its first official unlock (New Zealand: Wed 18 Nov 2026, 12:00 Norway time). Rockstar removes pre-release footage.",
+  "Launch week (first unlock until Sun 22 Nov 06:00 Norway): up to 8 posts per account per day, at least 90 minutes apart.",
   "No story spoilers (endings, deaths, final missions, twists) in titles, hooks, captions or the clip itself. No isolated cutscenes.",
   "Every post needs our own layer: a hook and ideally one line of commentary. Plain reposts get demonetized as reused content.",
   "Other people's footage only with a permission record (campaign or written OK). The tools refuse anything else.",

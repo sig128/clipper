@@ -8,7 +8,7 @@ import { getEdit, queueRender } from "./edits.js";
 import { enqueue, Permanent } from "./jobs.js";
 import { getClip } from "./library.js";
 import { mediaUrl } from "./media.js";
-import { GTA6_UNLOCK, spoilerWords } from "./rules.js";
+import { gapText, GTA6_UNLOCK, maxPerDay, spacingMs, spoilerWords } from "./rules.js";
 import { accounts, openSlots } from "./schedule.js";
 import { labelIn } from "./time.js";
 
@@ -18,7 +18,6 @@ export interface PostRow {
   remote_post_id: string | null; remote_url: string | null; error: string | null; created_by: string; created_at: Date;
 }
 
-const HOURS2 = 2 * 3600_000;
 
 export async function schedulePost(input: {
   editId: string; accountIds?: string[]; at?: string; title: string; caption?: string; hashtags?: string[]; by: string; edgeScope?: EdgeId | null;
@@ -51,17 +50,19 @@ export async function schedulePost(input: {
       if (!at) reasons.push("No open slot in the next 3 days.");
     }
     if (at && !Number.isNaN(at.getTime())) {
+      const gap = spacingMs(at);
       const near = await one<{ at: Date }>(
         "select at from posts where account_id = $1 and status not in ('cancelled','failed') and abs(extract(epoch from (at - $2::timestamptz))) < $3 limit 1",
-        [acct.id, at, HOURS2 / 1000],
+        [acct.id, at, gap / 1000],
       );
-      if (near) reasons.push(`Less than 2 hours from another post on this account (${labelIn(near.at, acct.tz)}).`);
+      if (near) reasons.push(`Less than ${gapText(gap)} from another post on this account (${labelIn(near.at, acct.tz)}).`);
       const sameDay = await one<{ n: number }>(
         "select count(*)::int as n from posts where account_id = $1 and status not in ('cancelled','failed') and at between $2::timestamptz - interval '12 hours' and $2::timestamptz + interval '12 hours'",
         [acct.id, at],
       );
-      if ((sameDay?.n ?? 0) >= 6) reasons.push("Already 6 posts around that day on this account.");
-      if (clip?.game === "gta6" && at < GTA6_UNLOCK) reasons.push("GTA VI footage before launch (unlocks Thu 19 Nov, midnight in Norway).");
+      const cap = maxPerDay(at);
+      if ((sameDay?.n ?? 0) >= cap) reasons.push(`Already ${cap} posts around that day on this account.`);
+      if (clip?.game === "gta6" && at < GTA6_UNLOCK) reasons.push("GTA VI footage before launch (first unlock: New Zealand, Wed 18 Nov 12:00 Norway time).");
     }
     const dupEdit = await one("select id from posts where edit_id = $1 and platform = $2 and status <> 'cancelled'", [edit.id, acct.platform]);
     if (dupEdit) reasons.push(`This edit is already planned on ${PLAT_NAME[acct.platform]}. Each edit goes out once per platform.`);
